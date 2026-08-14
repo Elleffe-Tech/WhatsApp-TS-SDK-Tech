@@ -1,0 +1,106 @@
+/**
+ * WhatsApp NodeJS SDK.
+ *
+ * @author Great Detail Ltd <info@greatdetail.com>
+ * @author Dom Webber <dom.webber@hotmail.com>
+ * @see    https://greatdetail.com
+ */
+
+import type { KyInstance, Options as KyOptions } from "ky";
+import ky from "ky";
+import BusinessProfile from "./BusinessProfile/index.js";
+import Media from "./Media/index.js";
+import Message from "./Message/index.js";
+import PhoneNumbers from "./PhoneNumbers/index.js";
+import SubscribedApps from "./SubscribedApps/index.js";
+import Template from "./Template/index.js";
+import Webhook from "./Webhook/index.js";
+import WhatsappBusinessAccount from "./WhatsappBusinessAccount/index.js";
+
+export interface Options {
+  /** @deprecated Use `baseUrl` instead */
+  prefixUrl?: string;
+  baseUrl?: string;
+  graphVersion?: `v${string}` | (string & NonNullable<unknown>);
+  request?: Omit<KyOptions, "prefixUrl">;
+}
+
+/**
+ * The (Unofficial) WhatsApp SDK.
+ *
+ * ```ts
+ * // Instantiate the SDK Client
+ * const sdk = new Client({
+ *   request: {
+ *     headers: { Authorization: "Bearer ..." },
+ *   },
+ * });
+ *
+ * // Use it!
+ * const message = await sdk.message.createMessage({
+ *   phoneNumberID: "123...809",
+ *   to: "1234567890",
+ *   type: "text",
+ *   text: { body: "Hello" },
+ * });
+ * ```
+ *
+ * @see https://github.com/great-detail/WhatsApp-JS-SDK
+ */
+export default class Client {
+  public static DEFAULT_GRAPH_BASE_URL = "https://graph.facebook.com";
+  public static DEFAULT_GRAPH_VERSION = "v23.0";
+
+  protected _transport: KyInstance;
+  /** Business-Profile APIs */
+  public businessProfile: BusinessProfile;
+
+  /** Media APIs */
+  public media: Media;
+
+  /** Messaging APIs */
+  public message: Message;
+
+  /** Phone Number APIs */
+  public phoneNumbers: PhoneNumbers;
+
+  /** Subscribed App APIs */
+  public subscribedApps: SubscribedApps;
+
+  /** Template APIs */
+  public template: Template;
+
+  /** Webhook APIs */
+  public webhook: Webhook;
+
+  /** WhatsApp Business Account APIs */
+  public whatsappBusinessAccount: WhatsappBusinessAccount;
+
+  constructor({
+    baseUrl,
+    prefixUrl,
+    graphVersion = Client.DEFAULT_GRAPH_VERSION,
+    request,
+  }: Options = {}) {
+    this._transport = ky.create({
+      ...request,
+      timeout: 72_000,
+      baseUrl:
+        (baseUrl ?? prefixUrl ?? Client.DEFAULT_GRAPH_BASE_URL).replace(
+          /\/$/,
+          "",
+        ) +
+        "/" +
+        graphVersion,
+    });
+
+    this.businessProfile = new BusinessProfile(this._transport);
+    this.media = new Media(this._transport);
+    this.message = new Message(this._transport);
+    this.phoneNumbers = new PhoneNumbers(this._transport);
+    this.subscribedApps = new SubscribedApps(this._transport);
+    this.template = new Template(this._transport);
+    this.webhook = new Webhook();
+    this.whatsappBusinessAccount = new WhatsappBusinessAccount(this._transport);
+  }
+}

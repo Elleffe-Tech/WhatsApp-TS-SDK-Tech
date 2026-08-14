@@ -1,0 +1,106 @@
+{
+  "name": "@great-detail/whatsapp",
+  "version": "9.1.0",
+  "type": "module",
+  "description": "SDK for interfacing with WhatsApp Business Platform in Typescript or Node.js using the Cloud API, hosted by Meta.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/great-detail/WhatsApp-JS-SDK.git"
+  },
+  "homepage": "https://github.com/great-detail/WhatsApp-JS-SDK",
+  "bugs": {
+    "url": "https://github.com/great-detail/WhatsApp-JS-SDK/issues"
+  },
+  "author": "Great Detail Ltd <info@greatdetail.com>",
+  "contributors": [
+    "Rashed Talukder",
+    "Dom Webber <dom.webber@hotmail.com>",
+    "Great Detail Ltd <info@greatdetail.com>"
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "WhatsApp",
+    "SDK",
+    "Business",
+    "Platform",
+    "secure",
+    "messaging",
+    "NodeJS",
+    "Cloud API"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "changeset": "changeset",
+    "fix": "pnpm run /^fix:.*/",
+    "fix:eslint": "eslint . --fix",
+    "fix:prettier": "prettier --write .",
+    "lint": "pnpm run /^lint:.*/",
+    "lint:eslint": "eslint .",
+    "lint:prettier": "prettier --check .",
+    "lint:publint": "publint",
+    "lint:typecheck": "npm run typecheck",
+    "prerelease": "pnpm run build",
+    "release": "changeset publish",
+    "test": "pnpm run /^test:.*/",
+    "test:integration": "pnpm run /^test:integration:.*/",
+    "test:integration:bun": "cd tests/bun && bun test && cd -",
+    "test:integration:deno": "cd tests/deno && deno test && cd -",
+    "test:unit": "node --import tsx --test ./src/**/*.test.ts ./src/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ky": "^2.0.1"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.30.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-pkg": "^0.22.1",
+    "publint": "^0.3.18",
+    "tsdown": "^0.22.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2"
+  },
+  "overrides": {
+    "flatted": "3.4.2",
+    "glob": "10.5.0",
+    "picomatch": "4.0.4",
+    "tmp": "0.2.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "pnpm": {
+    "overrides": {
+      "tmp": "0.2.5",
+      "glob": "10.5.0",
+      "picomatch": "4.0.4",
+      "flatted": "3.4.2"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
