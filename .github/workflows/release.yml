@@ -49,8 +49,11 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
-      - name: Unit tests
-        run: pnpm run test:unit
+      - name: Tests with coverage thresholds
+        run: pnpm run test:coverage
+
+      - name: Packed package smoke test
+        run: pnpm run test:package
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

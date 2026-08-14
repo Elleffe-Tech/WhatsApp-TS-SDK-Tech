@@ -1,4 +1,4 @@
-# WhatsApp Business Platform API SDK for Node.JS, Deno & Bun
+# WhatsApp Business Platform API SDK for Node.js
 
 [![npm (scoped)][]][sdk-npmjs]
 
@@ -26,10 +26,7 @@ Install the WhatsApp Business Platform SDK:
 ```bash
 # NPM:
 npm install @elleffe-tech/whatsapp
-# ^ or use PNPM, Yarn, Bun
-
-# Deno:
-deno add npm:@elleffe-tech/whatsapp
+# or use pnpm or Yarn
 ```
 
 ## Getting started
@@ -40,9 +37,7 @@ most of the way. Also see the [examples and snippets section](#usage) to get
 started using the SDK.
 
 ```ts
-import Client from "@elleffe-tech/whatsapp"; // for ESM environments
-// require("@elleffe-tech/whatsapp"); // for CJS environments
-// import Client from "npm:@elleffe-tech/whatsapp"; // for Deno
+import Client from "@elleffe-tech/whatsapp";
 
 // Instantiate the SDK Client
 const sdk = new Client({
@@ -54,6 +49,7 @@ const sdk = new Client({
 // Use it!
 const message = await sdk.message.createMessage({
   phoneNumberID: "123...809",
+  recipientType: "individual",
   to: "1234567890",
   type: "text",
   text: { body: "Hello" },
@@ -62,71 +58,47 @@ const message = await sdk.message.createMessage({
 
 ## Compatibility
 
-This SDK is designed to be compatible with the Cloud API API. Some fields used
-by the
-[On-Premises API](https://developers.facebook.com/docs/whatsapp/on-premises/sunset/)
-may be included, however, no on-premises-only functionality is implemented.
+This SDK targets Meta's WhatsApp Business Platform Cloud API exclusively.
 
 | SDK  | Cloud API |
 | :--- | --------: |
-| v8.x |       v23 |
+| v2.x |     v25.0 |
 
-Whilst the SDK may work with alternative versions of the Graph API, it is
-designed to work with the above. If you find any compatibility issues, please
-report them via
-[GitHub Issues](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/issues).
+The Graph API version is fixed by the SDK. v2 always sends versioned requests
+through `/v25.0`; it has no `graphVersion` option and does not support older
+request or webhook contracts. Upgrade the SDK when support for a newer Graph API
+release is published.
 
 See this SDK's
 [Changelog](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/blob/main/CHANGELOG.md)
 for updates and release notes.
 
-- **Tested on NodeJS LTS Versions**: `v22`, `v24`,
-- **Tested on Deno LTS Versions**: `v2.4`,
-- **Tested on Bun Versions**: `v1.2`.
+- **Module format**: ESM only.
+- **Supported Node.js versions**: `v22` and newer.
+- **Tested Node.js LTS versions**: `v22` and `v24`.
 
-Additional NodeJS versions may also work, however, automated testing requires
-NodeJS' test suite, which was introduced in `v21`. Other versions of Deno/Bun
-may also work, regardless of NodeJS polyfill support - uses SubtleCrypto.
+Bun, Deno, and browser runtimes are not supported or tested.
 
-## Migrating v8 to v9
+## Migrating v1 to v2
 
-v9 of this SDK increased the minimum supported NodeJS to v22, alongside an
-update to [ky](https://github.com/sindresorhus/ky) that required this update.
+v2 is a breaking, v25-only release:
 
-Some request override options may have changed in-line with the options in ky -
-see the ky v2 release changelog for more information on which options have
-changed: https://github.com/sindresorhus/ky/releases/tag/v2.0.0.
+- Remove `graphVersion` and `prefixUrl` from `Client` options. `baseUrl` remains
+  available for proxies and testing, but the SDK always appends `/v25.0`.
+- Pass `recipientType` explicitly to `message.createMessage`. Individual
+  messages require `to`, `recipient` (a BSUID), or both; group messages require
+  a group ID in `to`.
+- Handle the status webhook's `conversation` property as optional. It is only
+  sent for messages in a free entry point conversation.
+- Errors embedded in webhook payloads are now typed as `WhatsappWebhookError`;
+  `WhatsappError` remains the shape returned in HTTP responses.
+- Handle BSUID changes as `messages` system events. The incorrectly documented
+  `user_id_update` subscription type has been removed.
+- Remove On-Premises-only and pre-v25 compatibility fields.
 
-## Migrating v7 to v8
-
-v8 of this SDK increased the minimum supported NodeJS version to v20.19.0,
-alongside the release of support for
-[`require()` with ESM](https://github.com/nodejs/node/releases/tag/v20.19.0).
-This also coincides with NodeJS v18 reaching EOL, thus making the minimum LTS
-NodeJS version v20.
-
-This update to the minimum supported NodeJS version allows us to greatly
-decrease the bundle size due to releasing ESM-only builds. Consumers in a CJS
-environment should
-[still be able to use the library as before](https://github.com/nodejs/node/releases/tag/v20.19.0).
-
-v8 also removes the CLI aspect of this package. This change comes as the CLI
-aspect of this SDK hasn't been updated since early development and support for
-later functionality was not added. This too allows for a reduction in bundle
-size.
-
-v8 of this SDK also updates the default Meta Graph API version to `v23.0` -
-whilst this update should maintain compatibility, to remain on the previous
-Graph API version (`v20.0`) update instantiation of this client as follows:
-
-```ts
-// To remain on the previous Graph API version:
-const sdk = new Client({
-  // Add this line to the instantiation options:
-  graphVersion: "v20.0",
-  // ...
-});
-```
+See Meta's
+[WhatsApp Business Platform changelog](https://developers.facebook.com/documentation/business-messaging/whatsapp/changelog)
+for the upstream changes represented by these contracts.
 
 ## Usage
 
@@ -152,6 +124,7 @@ const message = await sdk.message.createStatus({
 ```ts
 const message = await sdk.message.createMessage({
   phoneNumberID: "123...809",
+  recipientType: "individual",
   to: "1234567890",
   type: "text",
   text: { body: "Hello" },
@@ -163,6 +136,7 @@ const message = await sdk.message.createMessage({
 ```ts
 const message = await sdk.message.createMessage({
   phoneNumberID: "123...809",
+  recipientType: "individual",
   to: "1234567890",
   type: "template",
   template: {
@@ -202,6 +176,7 @@ Thanks @lcneves!
 ```ts
 const message = await sdk.message.createMessage({
   phoneNumberID: "123...809",
+  recipientType: "individual",
   to: "1234567890",
   type: MessageType.Interactive,
   interactive: {
@@ -234,6 +209,7 @@ const message = await sdk.message.createMessage({
 ```ts
 const message = await sdk.message.createMessage({
   phoneNumberID: "123...809",
+  recipientType: "individual",
   to: "1234567890",
   type: MessageType.Interactive,
   interactive: {
@@ -255,6 +231,7 @@ const message = await sdk.message.createMessage({
 ```ts
 const message = await sdk.message.createMessage({
   phoneNumberID: "123...809",
+  recipientType: "individual",
   to: "1234567890",
   type: MessageType.Interactive,
   interactive: {
@@ -301,6 +278,77 @@ const message = await sdk.message.createMessage({
 });
 ```
 
+**Send a marketing template**:
+
+```ts
+await sdk.marketingMessages.send({
+  phoneNumberID: "123...809",
+  recipientType: "individual",
+  to: "1234567890",
+  type: "template",
+  productPolicy: "STRICT",
+  template: {
+    name: "summer_sale",
+    language: { code: "en_US" },
+    components: [],
+  },
+});
+```
+
+### Groups
+
+```ts
+const group = await sdk.groups.create({
+  phoneNumberID: "123...809",
+  subject: "Customer advisory group",
+  join_approval_mode: "approval_required",
+});
+
+await sdk.message.createMessage({
+  phoneNumberID: "123...809",
+  recipientType: "group",
+  to: "<GROUP_ID>",
+  type: "text",
+  text: { body: "Welcome to the group." },
+});
+```
+
+### Business-scoped users
+
+```ts
+await sdk.businessScopedUsers.setUsername({
+  phoneNumberID: "123...809",
+  username: "example_business",
+});
+
+const blockedUsers = await sdk.businessScopedUsers.listBlockedUsers({
+  phoneNumberID: "123...809",
+});
+```
+
+### In-App Signup and analytics
+
+```ts
+await sdk.inAppSignup.create({
+  businessAccountID: "<WABA_ID>",
+  signup_message: "Get product updates on WhatsApp.",
+  confirmation_message: "Thanks for signing up.",
+  privacy_policy_url: "https://example.com/privacy",
+  policy: {
+    tos: "https://www.facebook.com/legal/ads-manager-marketing-messages-terms",
+    accepted: true,
+  },
+});
+
+const pricing = await sdk.analytics.getPricing({
+  businessAccountID: "<WABA_ID>",
+  start: 1_786_060_800,
+  end: 1_788_739_200,
+  granularity: "DAILY",
+  countryCodes: ["IT"],
+});
+```
+
 **Upload Media Files**:
 
 ```ts
@@ -316,7 +364,7 @@ const result = await sdk.media.upload({
 **Get a Media File's Download URL**:
 
 ```ts
-const result = await sdk.media.upload({
+const result = await sdk.media.getURL({
   phoneNumberID: "123...809",
   mediaID: "<MEDIA_ID>",
 });
@@ -324,9 +372,16 @@ const result = await sdk.media.upload({
 
 **Download Media Files**:
 
+`media.download` talks to a pre-signed lookaside URL rather than the Graph API,
+so it does not inherit the client's request options. Meta still requires an
+access token, so pass one explicitly:
+
 ```ts
 import fs from "fs";
-const result = await sdk.media.download("<MEDIA_URL>");
+const result = await sdk.media.download({
+  mediaURL: "<MEDIA_URL>",
+  request: { headers: { Authorization: "Bearer ..." } },
+});
 const file = await result.arrayBuffer();
 fs.writeFileSync("<FILE_PATH>", Buffer.from(file));
 ```
@@ -379,7 +434,7 @@ app.post("/path/to/webhook", async (req, res) => {
 fastify.route({
   method: "GET",
   url: "/path/to/webhook",
-  handler: (request, reply) => {   *
+  handler: async (request, reply) => {
     const reg = await sdk.webhook.register({
       method: request.method,
       query: request.query,
@@ -391,14 +446,18 @@ fastify.route({
       return reply.send(reg.reject());
     }
     return reply.send(reg.accept());
-  }
+  },
 });
 
 // Event Notification requests:
 // See: https://github.com/fastify/fastify/issues/707#issuecomment-817224931
-fastify.addContentTypeParser("application/json", { parseAs: "buffer" }, (_req, body, done) => {
-  done(null, body);
-});
+fastify.addContentTypeParser(
+  "application/json",
+  { parseAs: "buffer" },
+  (_req, body, done) => {
+    done(null, body);
+  },
+);
 
 fastify.route({
   method: "POST",
@@ -422,7 +481,7 @@ fastify.route({
       return reply.code(400).send();
     }
     return reply.send(event.accept());
-  }
+  },
 });
 ```
 
@@ -502,10 +561,6 @@ ky can be available to this SDK, including: retries, hooks, auto-throwing on
 HTTP errors, etc. A number of these features are used under-the-hood already,
 e.g. auto-throwing on HTTP errors.
 
-v9 of this SDK updates ky to v2 - this update has some changes to the request
-options - see the ky v2 release changelog for more information:
-https://github.com/sindresorhus/ky/releases/tag/v2.0.0.
-
 **Request Retries**:
 
 - Default retries: 3
@@ -521,6 +576,7 @@ const sdk = new Client({
 // or at a method level
 const message = await sdk.message.createMessage({
   phoneNumberID: "123...809",
+  recipientType: "individual",
   to: "1234567890",
   type: "text",
   text: { body: "Hello" },
@@ -567,21 +623,30 @@ then maintained by
 
 ## TODO
 
-There are a number of features supported by the WhatsApp Business Cloud API and
-WhatsApp Business Management API that are yet to be implemented in this SDK.
-Please feel free to contribute via a Pull Request, or note your interest in
-particular features by creating an issue for it.
+The v2 surface follows generally available Graph API v25 capabilities. Alpha,
+gated, limited-rollout, and public-beta APIs are intentionally excluded.
 
 - [x] Interactive Message Types,
 - [x] Template Message Types,
 - [x] Template Management,
 - [x] Button Message Types,
 - [ ] Flow Message Types,
-- [ ] List Message Types,
+- [x] List Message Types,
 - [x] WABA Webhook Subscription Management,
 - [ ] WABA Extended Credit Management,
 - [x] WABA Phone Number Management,
+- [x] Groups API,
+- [x] Marketing Messages API,
+- [x] Business-scoped User IDs and usernames,
+- [x] In-App Signup API,
+- [x] WABA analytics and billing migration,
 - [ ] WABA System User Management?
+- [ ] Flows API,
+- [ ] Calling API.
+
+Deliberately not shipped: parameters and endpoints that are not present in
+Meta's public v25 reference. If you rely on one and can point at documentation
+for it, please open an issue.
 
 [npm (scoped)]: https://img.shields.io/npm/v/%40elleffe-tech/whatsapp
 [sdk-npmjs]: https://www.npmjs.com/package/@elleffe-tech/whatsapp

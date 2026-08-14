@@ -20,6 +20,7 @@ export const TEMPLATE_BUTTON_TYPES = [
   "FLOW",
   "VOICE_CALL",
   "APP",
+  "REQUEST_CONTACT_INFO",
 ] as const;
 
 export type TemplateButtonType = (typeof TEMPLATE_BUTTON_TYPES)[number];
@@ -45,7 +46,8 @@ export type TemplateButton =
   | CatalogTemplateButton
   | FlowTemplateButton
   | VoiceCallTemplateButton
-  | AppTemplateButton;
+  | AppTemplateButton
+  | RequestContactInfoTemplateButton;
 
 export type CreateTemplateButton =
   | CreateQuickReplyTemplateButton
@@ -56,7 +58,8 @@ export type CreateTemplateButton =
   | CreateMPMTemplateButton
   | CreateSPMTemplateButton
   | CreateOTPTemplateButton
-  | CreateFlowTemplateButton;
+  | CreateFlowTemplateButton
+  | CreateRequestContactInfoTemplateButton;
 
 export type QuickReplyTemplateButton = TemplateButtonBase<{
   type: "QUICK_REPLY";
@@ -185,4 +188,12 @@ export type VoiceCallTemplateButton = TemplateButtonBase<{
 export type AppTemplateButton = TemplateButtonBase<{
   type: "APP";
   text?: string; // TODO: Clarify this field
+}>;
+
+export type RequestContactInfoTemplateButton = TemplateButtonBase<{
+  type: "REQUEST_CONTACT_INFO";
+}>;
+
+export type CreateRequestContactInfoTemplateButton = CreateTemplateButtonBase<{
+  type: "REQUEST_CONTACT_INFO";
 }>;

@@ -6,8 +6,6 @@
  * @see    https://greatdetail.com
  */
 
-/** @deprecated use WhatsappBusinessAccountID */
-export type BusinessAccountID = WhatsappBusinessAccountID;
 /** WhatsApp Business Account ID */
 export type WhatsappBusinessAccountID = string;
 
@@ -38,7 +36,6 @@ export type WhatsappBusinessAccountFields =
   | "account_review_status"
   | "id"
   | "name"
-  | "message_template_namespace" // Note: Not needed for Cloud API, only On-Prem
   | "currency"
   | "on_behalf_of_business_info"
   | "primary_funding_id"
@@ -53,13 +50,15 @@ export type WhatsappBusinessAccountFields =
   | "marketing_messages_lite_api_status"
   | "marketing_messages_onboarding_status"
   | "ownership_type"
-  | "status";
+  | "status"
+  | "whatsapp_business_manager_messaging_limit"
+  | "disable_marketing_messages_on_cloud_api"
+  | "degrees_of_freedom_spec";
 
 export type WhatsappBusinessAccount = {
   id: WhatsappBusinessAccountID;
   name: string;
   account_review_status: string;
-  message_template_namespace?: string;
   timezone_id: string;
   owner_business_info: {
     id: string;
@@ -91,6 +90,11 @@ export type WhatsappBusinessAccount = {
     | "ONBOARDED";
   ownership_type: "CLIENT_OWNED" | unknown;
   status: "ACTIVE";
+  whatsapp_business_manager_messaging_limit?: string;
+  disable_marketing_messages_on_cloud_api?: boolean;
+  degrees_of_freedom_spec?: {
+    creative_features_spec: Array<Record<string, "OPT_IN" | "OPT_OUT">>;
+  };
 
   health_status: {
     can_send_message: WhatsappBusinessAccountMessageEligibility;
@@ -115,3 +119,18 @@ export type GetWhatsappBusinessAccountOptions = {
 };
 
 export type GetWhatsappBusinessAccountPayload = WhatsappBusinessAccount;
+
+export type UpdateWhatsappBusinessAccountOptions = {
+  disable_marketing_messages_on_cloud_api?: boolean;
+  is_enabled_for_insights?: boolean;
+  degrees_of_freedom_spec?: {
+    creative_features_spec: Record<
+      string,
+      { enroll_status: "OPT_IN" | "OPT_OUT" }
+    >;
+  };
+};
+
+export type UpdateWhatsappBusinessAccountPayload = {
+  id: WhatsappBusinessAccountID;
+};

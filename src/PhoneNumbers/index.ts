@@ -12,9 +12,11 @@ import {
   GetPhoneNumberOptions,
   GetPhoneNumberPayload,
   ListPhoneNumbersOptions,
-  ListPhoneNumbersPaylod,
+  ListPhoneNumbersPayload,
   UpdatePhoneNumberOptions,
   UpdatePhoneNumberPayload,
+  RequestOfficialBusinessAccountOptions,
+  RequestOfficialBusinessAccountPayload,
 } from "../types/PhoneNumbers/index.js";
 
 interface MethodOptions {
@@ -83,7 +85,7 @@ export default class PhoneNumbers {
             }
           : {}),
       },
-    })<ListPhoneNumbersPaylod>(this.getEndpoint(businessAccountID), request);
+    })<ListPhoneNumbersPayload>(this.getEndpoint(businessAccountID), request);
   }
 
   public updatePhoneNumber({
@@ -97,5 +99,17 @@ export default class PhoneNumbers {
         ...(new_display_name ? { new_display_name } : {}),
       },
     })<UpdatePhoneNumberPayload>(encodeURIComponent(phoneNumberID), request);
+  }
+
+  public requestOfficialBusinessAccount({
+    phoneNumberID,
+    request,
+  }: MethodOptions & RequestOfficialBusinessAccountOptions) {
+    return this._transport.extend({
+      method: "POST",
+    })<RequestOfficialBusinessAccountPayload>(
+      `${encodeURIComponent(phoneNumberID)}/request_official_business_account`,
+      request,
+    );
   }
 }

@@ -23,6 +23,17 @@ import {
   UpdateTemplatePayload,
 } from "../types/Templates/index.js";
 
+/**
+ * Serialize a filter that accepts either one value or several.
+ *
+ * The Graph API takes a bare value for a single entry and a JSON array for
+ * multiple, so this is not CSV despite reading like it.
+ */
+function singleOrJSONArray(value: string | string[]): string {
+  if (typeof value === "string") return value;
+  return value.length === 1 ? value[0] : JSON.stringify(value);
+}
+
 interface MethodOptions {
   request?: KyOptions;
 }
@@ -79,25 +90,22 @@ export default class Template {
       request,
     }: MethodOptions & ListTemplatesOptions,
   ) {
-    function singleOrCSV(array: string | string[]): string {
-      if (typeof array === "string") return array;
-      return array.length === 1 ? array[0] : JSON.stringify(array);
-    }
-
     return this._transport.extend({
       method: "GET",
       searchParams: {
         ...(name_or_content ? { name_or_content } : {}),
         ...(category
           ? {
-              category: singleOrCSV(category),
+              category: singleOrJSONArray(category),
             }
           : {}),
-        ...(limit ? { limit: limit.toString() } : {}),
+        ...(limit === undefined ? {} : { limit: limit.toString() }),
         ...(fields ? { fields: fields.join(",") } : {}),
-        ...(language ? { language: singleOrCSV(language) } : {}),
-        ...(status ? { status: singleOrCSV(status) } : {}),
-        ...(quality_score ? { quality_score: singleOrCSV(quality_score) } : {}),
+        ...(language ? { language: singleOrJSONArray(language) } : {}),
+        ...(status ? { status: singleOrJSONArray(status) } : {}),
+        ...(quality_score
+          ? { quality_score: singleOrJSONArray(quality_score) }
+          : {}),
       },
     })<ListTemplatesPayload>(this.getEndpoint(businessAccountID), request);
   }
@@ -119,25 +127,20 @@ export default class Template {
     limit,
     request,
   }: MethodOptions & ListLibraryTemplatesOptions) {
-    function singleOrCSV(array: string | string[]): string {
-      if (typeof array === "string") return array;
-      return array.length === 1 ? array[0] : JSON.stringify(array);
-    }
-
     return this._transport.extend({
       method: "GET",
       searchParams: {
         ...(search ? { search } : {}),
         ...(category
           ? {
-              category: singleOrCSV(category),
+              category: singleOrJSONArray(category),
             }
           : {}),
-        ...(language ? { language: singleOrCSV(language) } : {}),
-        ...(topic ? { topic: singleOrCSV(topic) } : {}),
-        ...(usecase ? { usecase: singleOrCSV(usecase) } : {}),
-        ...(industry ? { industry: singleOrCSV(industry) } : {}),
-        ...(limit ? { limit: limit.toString() } : {}),
+        ...(language ? { language: singleOrJSONArray(language) } : {}),
+        ...(topic ? { topic: singleOrJSONArray(topic) } : {}),
+        ...(usecase ? { usecase: singleOrJSONArray(usecase) } : {}),
+        ...(industry ? { industry: singleOrJSONArray(industry) } : {}),
+        ...(limit === undefined ? {} : { limit: limit.toString() }),
       },
     })<ListLibraryTemplatesPayload>("message_template_library", request);
   }
@@ -212,9 +215,13 @@ export default class Template {
     businessAccountID: WhatsappBusinessAccountID,
     { request, ...template }: MethodOptions & DeleteTemplateOptions,
   ) {
+    const searchParams =
+      "hsm_ids" in template
+        ? { hsm_ids: JSON.stringify(template.hsm_ids) }
+        : template;
     return this._transport.extend({
       method: "DELETE",
-      searchParams: template,
+      searchParams,
     })<DeleteTemplatePayload>(this.getEndpoint(businessAccountID), request);
   }
 }

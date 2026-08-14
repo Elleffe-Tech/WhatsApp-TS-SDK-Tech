@@ -57,6 +57,7 @@ export default class Message {
    * ```ts
    * const message = await sdk.message.createMessage({
    *   phoneNumberID: "123...809",
+   *   recipientType: "individual",
    *   to: "1234567890",
    *   type: "text",
    *   text: { body: "Hello" },
@@ -65,7 +66,7 @@ export default class Message {
    */
   public createMessage({
     phoneNumberID,
-    recipientType = "individual",
+    recipientType,
     request,
     ...message
   }: MethodOptions & CreateMessageOptions) {

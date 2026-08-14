@@ -17,10 +17,7 @@ export type CreateStatusOptions = {
   typing_indicator?: {
     type: "text";
   };
-  [key: string]: unknown | undefined;
 };
 
-export type CreateStatusPayload = {
-  success?: boolean;
-  error: WhatsappError;
-};
+export type CreateStatusPayload =
+  { success: true; error?: never } | { success?: false; error: WhatsappError };

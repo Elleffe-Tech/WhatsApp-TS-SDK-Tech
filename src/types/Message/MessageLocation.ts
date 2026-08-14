@@ -20,10 +20,10 @@ export type CreateMessageLocation = {
   /**
    * Name of the location.
    */
-  name: string;
+  name?: string;
 
   /**
    * Address of the location.
    */
-  address: string;
+  address?: string;
 };

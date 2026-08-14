@@ -7,14 +7,16 @@
  */
 
 import { describe, test } from "node:test";
-import assert from "node:assert";
-import Webhook, { IncomingRequest } from "../Webhook/index.js";
+import assert from "node:assert/strict";
+import Webhook, { type IncomingRequest } from "../Webhook/index.js";
 import IncorrectMethodWebhookError from "../Webhook/WebhookError/IncorrectMethodWebhookError.js";
 import InvalidHubModeWebhookError from "../Webhook/WebhookError/InvalidHubModeWebhookError.js";
 import InvalidHubChallengeWebhookError from "../Webhook/WebhookError/InvalidHubChallengeWebhookError.js";
 import InvalidHubVerifyTokenWebhookError from "../Webhook/WebhookError/InvalidHubVerifyTokenWebhookError.js";
 import InvalidHubSignatureWebhookError from "../Webhook/WebhookError/InvalidHubSignatureWebhookError.js";
+import MalformedBodyWebhookError from "../Webhook/WebhookError/MalformedBodyWebhookError.js";
 import MissingBodyWebhookError from "../Webhook/WebhookError/MissingBodyWebhookError.js";
+import WebhookError from "../Webhook/WebhookError/index.js";
 import { arrayBufferToHex } from "../utils/buffer.js";
 
 // Helper to generate HMAC signatures for test
@@ -176,6 +178,21 @@ describe("Webhook", () => {
       );
     });
 
+    test("Webhook.eventNotification: rejects a signature without the required sha256 prefix", async () => {
+      const webhook = new Webhook();
+      const req: IncomingRequest = {
+        method: "POST",
+        query: {},
+        headers: { "x-hub-signature-256": "deadbeef" },
+        body: "{}",
+      };
+
+      await assert.rejects(
+        () => webhook.eventNotification(req),
+        InvalidHubSignatureWebhookError,
+      );
+    });
+
     test("Webhook.eventNotification: throws on missing body", async () => {
       const webhook = new Webhook();
       const req: IncomingRequest = {
@@ -221,6 +238,95 @@ describe("Webhook", () => {
 
       // Accept returns undefined
       assert.equal(result.accept(), undefined);
+    });
+
+    test("Webhook.eventNotification: normalizes Node header casing and hashes the exact raw body", async () => {
+      const webhook = new Webhook();
+      const appSecret = "supersecret";
+      const body = '{\n  "message": "Caffè ☕"\n}\n';
+      const sig256 = await hmacHex("sha256", appSecret, body);
+
+      const result = await webhook.eventNotification({
+        method: "post",
+        query: {},
+        headers: {
+          "X-Hub-Signature-256": [`sha256=${sig256}`],
+        },
+        body,
+      });
+
+      assert.deepEqual(result.eventNotification, { message: "Caffè ☕" });
+      assert.equal(await result.checkSignature(appSecret), true);
+      assert.equal(result.signature.sha1.value, undefined);
+      assert.equal(await result.signature.sha1.check(appSecret), false);
+    });
+
+    test("Webhook.eventNotification: detects changes to insignificant JSON whitespace", async () => {
+      const webhook = new Webhook();
+      const appSecret = "supersecret";
+      const signedBody = '{"foo":"bar"}';
+      const receivedBody = '{ "foo": "bar" }';
+      const sig256 = await hmacHex("sha256", appSecret, signedBody);
+
+      const result = await webhook.eventNotification({
+        method: "POST",
+        query: {},
+        headers: { "x-hub-signature-256": `sha256=${sig256}` },
+        body: receivedBody,
+      });
+
+      assert.equal(await result.checkSignature(appSecret), false);
+      await assert.rejects(
+        () => result.verifySignature(appSecret),
+        InvalidHubSignatureWebhookError,
+      );
+    });
+
+    test("Webhook.eventNotification: rejects malformed JSON", async () => {
+      const webhook = new Webhook();
+
+      // The body is parsed before the caller can verify the signature, so an
+      // unauthenticated request must not surface a bare SyntaxError.
+      await assert.rejects(
+        () =>
+          webhook.eventNotification({
+            method: "POST",
+            query: {},
+            headers: { "x-hub-signature-256": "sha256=deadbeef" },
+            body: "{",
+          }),
+        (error: unknown) => {
+          assert.ok(error instanceof MalformedBodyWebhookError);
+          assert.ok(error instanceof WebhookError);
+          assert.equal(error.name, "MalformedBodyWebhookError");
+          assert.ok(error.cause instanceof SyntaxError);
+          return true;
+        },
+      );
+    });
+
+    test("Webhook.eventNotification: verifySignature survives destructuring", async () => {
+      const webhook = new Webhook();
+      const appSecret = "app-secret";
+      const body = '{"object":"whatsapp_business_account","entry":[]}';
+
+      const signed = await webhook.eventNotification({
+        method: "POST",
+        query: {},
+        headers: { "x-hub-signature-256": "sha256=deadbeef" },
+        body,
+      });
+      const signature =
+        await signed.signature.sha256.getCalculatedSignature(appSecret);
+
+      const { verifySignature } = await webhook.eventNotification({
+        method: "POST",
+        query: {},
+        headers: { "x-hub-signature-256": `sha256=${signature}` },
+        body,
+      });
+
+      await verifySignature(appSecret);
     });
 
     test("Webhook.eventNotification: verifySignature throws on invalid signature", async () => {

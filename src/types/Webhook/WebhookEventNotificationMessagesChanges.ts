@@ -7,7 +7,7 @@
  */
 
 import type { AccountID, BSUID } from "../Account.js";
-import type { WhatsappError } from "../Error.js";
+import type { WhatsappWebhookError } from "../Error.js";
 import type {
   EventNotificationMessageMessage,
   MessageID,
@@ -33,10 +33,10 @@ export type WebhookEventNotificationMessagesChanges = {
      *
      * Contacts will be included for sent, delivered, and read status.
      */
-    contacts: WebhookEventNotificationContact[];
+    contacts?: WebhookEventNotificationContact[];
 
     /** An array of error objects describing the error. */
-    errors: WhatsappError[];
+    errors?: WhatsappWebhookError[];
 
     /**
      * Product used to send the message. Value is always whatsapp.
@@ -120,13 +120,13 @@ export type WebhookEventNotificationMessagesChanges = {
         };
 
         /** An array of error objects describing the error. */
-        errors?: WhatsappError[];
+        errors?: WhatsappWebhookError[];
 
         /**
          * An identity object. Webhook is triggered when a customer's phone number or
          * profile information has been updated.
          */
-        identity: EventNotificationMessageIdentity;
+        identity?: EventNotificationMessageIdentity;
 
         /**
          * Referral object. When a customer clicks an ad that redirects to WhatsApp,
@@ -161,7 +161,11 @@ export type WebhookEventNotificationMessagesChanges = {
        */
       recipient_id?: PhoneNumberString;
       recipient_user_id?: BSUID;
-      parent_recipient_user_id?: BSUID;
+      recipient_parent_user_id?: BSUID;
+      recipient_type?: "individual" | "group";
+      recipient_participant_id?: PhoneNumberString;
+      recipient_participant_user_id?: BSUID;
+      recipient_identity_key_hash?: string;
 
       /**
        * For a status to be read, it must have been delivered. In some scenarios,
@@ -171,34 +175,35 @@ export type WebhookEventNotificationMessagesChanges = {
        * is implied that a message has been delivered if it has been read. The
        * reason for this behavior is internal optimization.
        */
-      status: "delivered" | "read" | "sent" | "failed";
+      status:
+        | "delivered"
+        | "read"
+        | "sent"
+        | "failed"
+        | "played"
+        | (string & NonNullable<unknown>);
 
       /** Date for the status message. */
-      timestamp: number;
+      timestamp: string;
 
       /** An object containing pricing information. */
-      pricing: {
+      pricing?: {
         /** Indicates the conversation category.  */
         category: ConversationType;
 
         /** Type of pricing model used by the business. */
-        pricing_model: "CBP" | (string & NonNullable<unknown>);
+        pricing_model: "CBP" | "PMP" | (string & NonNullable<unknown>);
 
-        /**
-         * Indicates if the given message or conversation is billable. Default is
-         * true for all conversations, including those inside your free tier limit,
-         * except those initiated from free entry points. Free entry point
-         * conversation are not billable, false. You will not be charged for free
-         * tier limit conversations, but they are considered billable and will be
-         * reflected on your invoice.
-         *
-         * @deprecated
-         */
-        billable: boolean;
+        /** The event type used by per-message pricing. */
+        type?:
+          | "regular"
+          | "free_customer_service"
+          | "free_entry_point"
+          | (string & NonNullable<unknown>);
       };
 
       /** Information about the conversation. */
-      conversation: {
+      conversation?: {
         /**
          * Represents the ID of the conversation the given status notification
          * belongs to.
@@ -223,6 +228,8 @@ export type WebhookEventNotificationMessagesChanges = {
 
       /** Arbitrary string included in sent message. */
       biz_opaque_callback_data?: string;
+      template_id?: string;
+      errors?: WhatsappWebhookError[];
     }>;
   };
 };

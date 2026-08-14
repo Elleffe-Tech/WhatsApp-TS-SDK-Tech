@@ -12,7 +12,13 @@ import type { WhatsappBusinessAccountID } from "../WhatsappBusinessAccount/index
 export type WebhookEventNotificationAccountUpdateChanges = {
   field: "account_update";
   value: {
-    event: "PARTNER_APP_INSTALLED" | (string & NonNullable<unknown>);
+    event:
+      | "PARTNER_APP_INSTALLED"
+      | "PARTNER_REMOVED"
+      | "ACCOUNT_VIOLATION"
+      | "ACCOUNT_RESTRICTION"
+      | "ACCOUNT_BANNED"
+      | "ACCOUNT_LOCKED";
     phone_number?: string;
     ban_info?: {
       waba_ban_state: string; // TODO: Enum?
@@ -35,8 +41,19 @@ export type WebhookEventNotificationAccountUpdateChanges = {
       expiration: string | number;
     };
 
+    disconnection_info?: {
+      reason:
+        | "BUSINESS_DOWNGRADE"
+        | "PRIMARY_INACTIVITY"
+        | "COMPANION_INACTIVITY"
+        | "ACCOUNT_DISCONNECTED"
+        | "CHANGE_NUMBER"
+        | "USER_RE_REGISTERED";
+      initiated_by: "USER" | "SYSTEM";
+    };
+
     /** Business verification status */
-    business_verification_status: string; // TODO: Enum?
+    business_verification_status?: string;
 
     /** Information about the status of the partner's self certification for a client */
     partner_client_certification_info?: {
@@ -58,7 +75,7 @@ export type WebhookEventNotificationAccountUpdateChanges = {
     };
 
     /** Information about a waba for business webhooks */
-    waba_info: {
+    waba_info?: {
       waba_id: AccountID;
 
       /** WABA owner business ID */

@@ -145,11 +145,133 @@ export type CreateInteractiveButton = {
   };
 };
 
+export type CreateInteractiveLocationRequest = {
+  type: "location_request_message";
+  body: InteractiveBody;
+  action: { name: "send_location" };
+};
+
+/**
+ * Requests the WhatsApp user's permission for the business to call them.
+ *
+ * @see https://developers.facebook.com/documentation/business-messaging/whatsapp/calling
+ */
+export type CreateInteractiveCallPermissionRequest = {
+  type: "call_permission_request";
+  body: InteractiveBody;
+  action: { name: "call_permission_request" };
+};
+
+/**
+ * Displays a product catalog, optionally with a product as the thumbnail.
+ */
+export type CreateInteractiveCatalogMessage = {
+  type: "catalog_message";
+  body: InteractiveBody;
+  footer?: InteractiveFooter;
+  action: {
+    name: "catalog_message";
+    parameters?: {
+      thumbnail_product_retailer_id: string;
+    };
+  };
+};
+
+export type CreateInteractiveProduct = {
+  type: "product";
+  body?: InteractiveBody;
+  footer?: InteractiveFooter;
+  action: {
+    catalog_id: string;
+    product_retailer_id: string;
+  };
+};
+
+export type CreateInteractiveProductList = {
+  type: "product_list";
+  header: InteractiveHeaderText;
+  body: InteractiveBody;
+  footer?: InteractiveFooter;
+  action: {
+    catalog_id: string;
+    sections: Array<{
+      title: string;
+      product_items: Array<{ product_retailer_id: string }>;
+    }>;
+  };
+};
+
+export type PaymentAmount = {
+  value: number;
+  offset: number;
+};
+
+export type PaymentOrderItem = {
+  retailer_id: string;
+  name: string;
+  amount: PaymentAmount;
+  quantity: number;
+  sale_amount?: PaymentAmount;
+};
+
+export type CreateInteractiveOrderDetails = {
+  type: "order_details";
+  body: InteractiveBody;
+  footer?: InteractiveFooter;
+  action: {
+    name: "review_and_pay";
+    parameters: {
+      reference_id: string;
+      type: "digital-goods" | "physical-goods";
+      payment_type: "payment_gateway" | "payment_link" | "cash_voucher";
+      payment_configuration?: string;
+      currency: string;
+      total_amount: PaymentAmount;
+      order: {
+        status: "pending";
+        items: PaymentOrderItem[];
+        subtotal: PaymentAmount;
+        tax?: PaymentAmount & { description?: string };
+        shipping?: PaymentAmount & { description?: string };
+        discount?: PaymentAmount & { description?: string };
+      };
+    };
+  };
+};
+
+export type CreateInteractiveOrderStatus = {
+  type: "order_status";
+  body: InteractiveBody;
+  action: {
+    name: "review_order";
+    parameters: {
+      reference_id: string;
+      order: {
+        status:
+          | "pending"
+          | "processing"
+          | "partially_shipped"
+          | "shipped"
+          | "completed"
+          | "canceled";
+        description: string;
+      };
+    };
+  };
+};
+
 export type CreateMessageInteractive =
   | CreateInteractiveCTAUrl
   | CreateInteractiveList
   | CreateInteractiveCarousel
-  | CreateInteractiveButton;
+  | CreateInteractiveButton
+  | CreateInteractiveLocationRequest
+  | CreateInteractiveCallPermissionRequest
+  | CreateInteractiveCatalogMessage
+  | CreateInteractiveProduct
+  | CreateInteractiveProductList
+  | CreateInteractiveOrderDetails
+  | CreateInteractiveOrderStatus;
 
 export type EventNotificationMessageInteractive =
   | {
@@ -173,5 +295,12 @@ export type EventNotificationMessageInteractive =
         name: string;
         body: string;
         response_json: string;
+      };
+    }
+  | {
+      type: "product";
+      product: {
+        catalog_id: string;
+        product_retailer_id: string;
       };
     };

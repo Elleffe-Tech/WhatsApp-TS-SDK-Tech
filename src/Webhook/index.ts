@@ -6,7 +6,8 @@
  * @see    https://greatdetail.com
  */
 
-import { WebhookEventNotification } from "../types/Webhook/WebhookEventNotification.js";
+import { timingSafeEqual } from "node:crypto";
+import type { WebhookEventNotification } from "../types/Webhook/WebhookEventNotification.js";
 import { arrayBufferToHex, strToArrayBuffer } from "../utils/buffer.js";
 import IncorrectMethodWebhookError from "./WebhookError/IncorrectMethodWebhookError.js";
 import WebhookError from "./WebhookError/index.js";
@@ -14,13 +15,40 @@ import InvalidHubChallengeWebhookError from "./WebhookError/InvalidHubChallengeW
 import InvalidHubModeWebhookError from "./WebhookError/InvalidHubModeWebhookError.js";
 import InvalidHubSignatureWebhookError from "./WebhookError/InvalidHubSignatureWebhookError.js";
 import InvalidHubVerifyTokenWebhookError from "./WebhookError/InvalidHubVerifyTokenWebhookError.js";
+import MalformedBodyWebhookError from "./WebhookError/MalformedBodyWebhookError.js";
 import MissingBodyWebhookError from "./WebhookError/MissingBodyWebhookError.js";
 
 export interface IncomingRequest {
   method: string;
   query: Record<string, string>;
   body?: string;
-  headers: Record<string, string>;
+  headers: Record<string, string | string[] | undefined>;
+}
+
+function getHeader(
+  headers: IncomingRequest["headers"],
+  requestedName: string,
+): string | undefined {
+  const header = Object.entries(headers).find(
+    ([name]) => name.toLowerCase() === requestedName,
+  )?.[1];
+
+  return Array.isArray(header) ? header[0] : header;
+}
+
+function getHubSignature(
+  headers: IncomingRequest["headers"],
+  name: "x-hub-signature" | "x-hub-signature-256",
+  algorithm: "sha1" | "sha256",
+): string | undefined {
+  const value = getHeader(headers, name);
+  const prefix = `${algorithm}=`;
+
+  if (!value?.startsWith(prefix) || value.length === prefix.length) {
+    return undefined;
+  }
+
+  return value.slice(prefix.length);
 }
 
 export default class Webhook {
@@ -31,6 +59,7 @@ export default class Webhook {
     InvalidHubModeWebhookError,
     InvalidHubSignatureWebhookError,
     InvalidHubVerifyTokenWebhookError,
+    MalformedBodyWebhookError,
     MissingBodyWebhookError,
   };
 
@@ -235,13 +264,16 @@ export default class Webhook {
       );
     }
 
-    const xHubSignature1 = request.headers["x-hub-signature"]
-      ?.toString()
-      .replace("sha1=", "");
-
-    const xHubSignature256 = request.headers["x-hub-signature-256"]
-      ?.toString()
-      .replace("sha256=", "");
+    const xHubSignature1 = getHubSignature(
+      request.headers,
+      "x-hub-signature",
+      "sha1",
+    );
+    const xHubSignature256 = getHubSignature(
+      request.headers,
+      "x-hub-signature-256",
+      "sha256",
+    );
     if (!xHubSignature256) {
       throw new InvalidHubSignatureWebhookError(
         "Webhook Event Notification Request must have header: x-hub-signature-256",
@@ -256,9 +288,18 @@ export default class Webhook {
 
     // Async request body buffering
     const bodyString = request.body;
-    const eventNotification = JSON.parse(
-      bodyString,
-    ) as WebhookEventNotification;
+    let eventNotification: WebhookEventNotification;
+    try {
+      eventNotification = JSON.parse(bodyString) as WebhookEventNotification;
+    } catch (cause) {
+      // The body is parsed before the caller has had a chance to verify the
+      // signature, so unauthenticated garbage must surface as a WebhookError
+      // rather than a raw SyntaxError.
+      throw new MalformedBodyWebhookError(
+        "Webhook Event Notification Request body is not valid JSON",
+        { cause },
+      );
+    }
 
     // Returns a Promise<string> (hex signature)
     function getCalculatedSignature(alg: string) {
@@ -298,12 +339,20 @@ export default class Webhook {
       };
     }
 
-    function checkSignature(alg: string, signature: string) {
+    function checkSignature(alg: string, signature?: string) {
       const signatureCalculator = getCalculatedSignature(alg);
 
       return async (appSecret: string): Promise<boolean> => {
+        if (!signature) return false;
+
         const generatedSignature = await signatureCalculator(appSecret);
-        return signature === generatedSignature;
+        const received = Buffer.from(signature, "utf8");
+        const generated = Buffer.from(generatedSignature, "utf8");
+
+        return (
+          received.length === generated.length &&
+          timingSafeEqual(received, generated)
+        );
       };
     }
 
@@ -330,9 +379,14 @@ export default class Webhook {
       /** Check X-Hub-Signature Validity */
       checkSignature: checkSignatureSHA256,
 
-      /** Asset X-Hub-Signature Validity */
+      /**
+       * Assert X-Hub-Signature Validity.
+       *
+       * Closes over `checkSignatureSHA256` rather than reading `this`, so it
+       * keeps working when destructured off the returned object.
+       */
       async verifySignature(appSecret: string) {
-        if (!(await this.checkSignature(appSecret))) {
+        if (!(await checkSignatureSHA256(appSecret))) {
           throw new InvalidHubSignatureWebhookError(
             "Webhook Event Notification Signature doesn't match received body",
           );

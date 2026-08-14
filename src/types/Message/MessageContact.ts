@@ -13,7 +13,7 @@ export type CreateMessageContact = {
   /**
    * Full contact address(es) formatted as an addresses object.
    */
-  addresses: {
+  addresses?: {
     type: "HOME" | "WORK" | (string & NonNullable<unknown>);
 
     /**
@@ -69,7 +69,7 @@ export type CreateMessageContact = {
   /**
    * Contact email address(es) formatted as an emails object.
    */
-  emails: {
+  emails?: {
     type: "HOME" | "WORK" | (string & NonNullable<unknown>);
 
     /**
@@ -160,7 +160,7 @@ export type CreateMessageContact = {
     wa_id?: AccountID;
   }[];
 
-  urls: {
+  urls?: {
     type?: "HOME" | "WORK" | (string & NonNullable<unknown>);
 
     /**
@@ -170,4 +170,10 @@ export type CreateMessageContact = {
      */
     url?: string;
   }[];
+};
+
+export type EventNotificationMessageContact = CreateMessageContact & {
+  /** Present when the user shared a contact card directly. */
+  vcard?: string;
+  origin?: "user_shared" | "contact_request";
 };

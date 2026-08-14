@@ -21,8 +21,6 @@ export type CreateMessageMedia = {
    *
    * Do not use this field when message type is set to text.
    *
-   * Cloud API users only:
-   *
    * - See {@link https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-messages#media-http-caching}
    *   if you would like us to cache the media asset for future messages.
    * - When we request the media asset from your server you must indicate the
@@ -34,12 +32,8 @@ export type CreateMessageMedia = {
   link?: string;
 
   /**
-   * Media asset caption. Do not use with audio or sticker media.
-   *
-   * On-Premises API users:
-   *
-   * - For v2.41.2 or newer, this field is limited to 1024 characters.
-   * - Captions are currently not supported for `document` media.
+   * Media asset caption. Do not use with audio or sticker media. Limited to
+   * 1024 characters.
    */
   caption?: string;
 
@@ -59,7 +53,10 @@ export type EventNotificationMessageMedia = {
    *
    * @since 5.0.0
    */
-  id?: string;
+  id: string;
+
+  /** Authenticated URL for downloading this media object. */
+  url: string;
 
   /**
    * Mime type of the media file.
@@ -69,12 +66,8 @@ export type EventNotificationMessageMedia = {
   mime_type: string;
 
   /**
-   * Media asset caption. Do not use with audio or sticker media.
-   *
-   * On-Premises API users:
-   *
-   * - For v2.41.2 or newer, this field is limited to 1024 characters.
-   * - Captions are currently not supported for `document` media.
+   * Media asset caption. Do not use with audio or sticker media. Limited to
+   * 1024 characters.
    */
   caption?: string;
 

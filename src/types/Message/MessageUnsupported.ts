@@ -7,5 +7,11 @@
  */
 
 export type EventNotificationMessageUnsupported = {
-  type: string;
+  type:
+    | "ephemeral"
+    | "view_once"
+    | "edited"
+    | "revoked"
+    | "unknown"
+    | (string & NonNullable<unknown>);
 };

@@ -6,6 +6,7 @@
  * @see    https://greatdetail.com
  */
 
+import type { CursorPage } from "../Pagination.js";
 import { TemplateButton } from "./TemplateButton.js";
 import {
   TemplateCategory,
@@ -52,6 +53,39 @@ export type AccountTemplate = {
     score: TemplateQualityScore;
   };
   components: TemplateComponent[];
+  source?: "AUTO_GENERATED" | (string & NonNullable<unknown>);
+  degrees_of_freedom_spec?: TemplateDegreesOfFreedomSpecResponse;
+};
+
+export const TEMPLATE_CREATIVE_FEATURES = [
+  "image_brightness_and_contrast",
+  "image_touchups",
+  "add_text_overlay",
+  "image_animation",
+  "image_background_gen",
+  "auto_promotion_tag",
+  "text_extraction_for_headline",
+  "text_extraction_for_tap_target",
+  "product_extensions",
+  "text_formatting_optimization",
+] as const;
+
+export type TemplateCreativeFeature =
+  (typeof TEMPLATE_CREATIVE_FEATURES)[number];
+export type TemplateCreativeFeatureEnrollment = "OPT_IN" | "OPT_OUT";
+export type TemplateDegreesOfFreedomSpec = {
+  creative_features_spec: Partial<
+    Record<
+      TemplateCreativeFeature,
+      { enroll_status: TemplateCreativeFeatureEnrollment }
+    >
+  >;
+};
+export type TemplateDegreesOfFreedomSpecResponse = {
+  creative_features_spec: Array<{
+    key: Uppercase<TemplateCreativeFeature>;
+    value: { enroll_status: TemplateCreativeFeatureEnrollment };
+  }>;
 };
 
 export type LibraryTemplate = {
@@ -106,7 +140,9 @@ export type GetTemplateFields =
   | "language"
   | "library_template_name"
   | "quality_score"
-  | "status";
+  | "status"
+  | "source"
+  | "degrees_of_freedom_spec";
 
 export type GetTemplateOptions = {
   fields?: GetTemplateFields[];
@@ -126,15 +162,7 @@ export type ListTemplatesOptions = {
   fields?: ListTemplatesFields[];
 };
 
-export type ListTemplatesPayload = {
-  data: AccountTemplate[];
-  paging: {
-    cursors?: {
-      before?: string;
-      after?: string;
-    };
-  };
-};
+export type ListTemplatesPayload = CursorPage<AccountTemplate>;
 
 export type ListLibraryTemplatesOptions = {
   search?: string;
@@ -179,8 +207,7 @@ export type CreateTemplateBaseOptions = {
   add_track_package_link?: boolean;
   code_expiration_minutes?: number;
 
-  /** @deprecated */
-  allow_category_change?: boolean;
+  degrees_of_freedom_spec?: TemplateDegreesOfFreedomSpec;
 };
 
 export type CreateTemplateOptions = CreateTemplateBaseOptions &
@@ -195,13 +222,13 @@ export type CreateTemplatePayload = {
 export type UpdateTemplateOptions = {
   category?: TemplateCategory;
   components?: CreateTemplateComponent[];
+  degrees_of_freedom_spec?: TemplateDegreesOfFreedomSpec;
 };
 
 export type UpdateTemplatePayload = { success: boolean };
 
-export type DeleteTemplateOptions = {
-  hsm_id?: string;
-  name: string;
-};
+export type DeleteTemplateOptions =
+  | { name: string; hsm_id?: string; hsm_ids?: never }
+  | { name?: never; hsm_id?: never; hsm_ids: string[] };
 
 export type DeleteTemplatePayload = { success: boolean };

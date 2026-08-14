@@ -101,6 +101,11 @@ export type MessageTemplateDateTimeParameter<T> = {
   };
 } & T;
 
+export type MessageTemplateGroupIDParameter<T> = {
+  type: "group_id";
+  group_id: string;
+} & T;
+
 export type MessageTemplateHeaderLocationParameter<T> = {
   type: "location";
   location: {
@@ -118,7 +123,8 @@ export type MessageTemplateBodyParameter<T> =
   | MessageTemplateDocumentParameter<T>
   | MessageTemplateVideoParameter<T>
   | MessageTemplateCurrencyParameter<T>
-  | MessageTemplateDateTimeParameter<T>;
+  | MessageTemplateDateTimeParameter<T>
+  | MessageTemplateGroupIDParameter<T>;
 
 export type MessageTemplateHeaderParameter<T> =
   | MessageTemplateTextParameter<T>
@@ -133,10 +139,12 @@ export type MessageTemplateButtonParameter<T> =
   | MessageTemplateButtonPayloadParameter<T>
   | MessageTemplateButtonTextParameter<T>;
 
+// `footer` components take no parameters, so they are never sent in an
+// outgoing template message - see the commented-out FooterMessageComponent
+// below.
 export const MESSAGE_TEMPLATE_COMPONENT_TYPES = [
   "header",
   "body",
-  "footer",
   "button",
 ] as const;
 
@@ -222,11 +230,4 @@ export type CreateMessageTemplate = {
   components:
     | MessageTemplateComponent<MessageTemplateComponentNamedParameter>[]
     | MessageTemplateComponent<MessageTemplateComponentPositionalParameter>[];
-
-  /**
-   * Namespace of the template.
-   *
-   * @deprecated Used by On-Premises API Only
-   */
-  namespace?: string;
 };

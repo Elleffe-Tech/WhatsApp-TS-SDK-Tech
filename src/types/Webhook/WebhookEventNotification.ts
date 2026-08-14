@@ -10,7 +10,11 @@ import type { WhatsappBusinessAccountID } from "../WhatsappBusinessAccount/index
 import type { WebhookEventNotificationAccountAlertsChanges } from "./WebhookEventNotificationAccountAlertsChanges.js";
 import type { WebhookEventNotificationAccountReviewUpdateChanges } from "./WebhookEventNotificationAccountReviewUpdateChanges.js";
 import type { WebhookEventNotificationAccountUpdateChanges } from "./WebhookEventNotificationAccountUpdateChanges.js";
+import type { WebhookEventNotificationAutomaticEventsChanges } from "./WebhookEventNotificationAutomaticEventsChanges.js";
+import type { WebhookEventNotificationBusinessCapabilityUpdateChanges } from "./WebhookEventNotificationBusinessCapabilityUpdateChanges.js";
 import type { WebhookEventNotificationCallsChanges } from "./WebhookEventNotificationCallsChanges.js";
+import type { WebhookEventNotificationGroupsChanges } from "./WebhookEventNotificationGroupsChanges.js";
+import type { WebhookEventNotificationHistoryChanges } from "./WebhookEventNotificationHistoryChanges.js";
 import type { WebhookEventNotificationMessageTemplateCategoryUpdateChanges } from "./WebhookEventNotificationMessageTemplateCategoryUpdateChanges.js";
 import type { WebhookEventNotificationMessageTemplateComponentsUpdateChanges } from "./WebhookEventNotificationMessageTemplateComponentsUpdateChanges.js";
 import type { WebhookEventNotificationMessageTemplateQualityUpdateChanges } from "./WebhookEventNotificationMessageTemplateQualityUpdateChanges.js";
@@ -21,14 +25,19 @@ import type { WebhookEventNotificationPaymentConfigurationUpdateChanges } from "
 import type { WebhookEventNotificationPhoneNumberNameUpdateChanges } from "./WebhookEventNotificationPhoneNumberNameUpdateChanges.js";
 import type { WebhookEventNotificationPhoneNumberQualityUpdateChanges } from "./WebhookEventNotificationPhoneNumberQualityUpdateChanges.js";
 import type { WebhookEventNotificationSecurityChanges } from "./WebhookEventNotificationSecurityChanges.js";
-import type { WebhookEventNotificationUserIDUpdateChanges } from "./WebhookEventNotificationUserIDUpdateChanges.js";
+import type { WebhookEventNotificationSmbAppStateSyncChanges } from "./WebhookEventNotificationSmbAppStateSyncChanges.js";
+import type { WebhookEventNotificationSmbMessageEchoesChanges } from "./WebhookEventNotificationSmbMessageEchoesChanges.js";
 import type { WebhookEventNotificationUserPreferencesChanges } from "./WebhookEventNotificationUserPreferencesChanges.js";
 
 export type * from "./WebhookEventNotification.shared.js";
 export type * from "./WebhookEventNotificationAccountAlertsChanges.js";
 export type * from "./WebhookEventNotificationAccountReviewUpdateChanges.js";
 export type * from "./WebhookEventNotificationAccountUpdateChanges.js";
+export type * from "./WebhookEventNotificationAutomaticEventsChanges.js";
+export type * from "./WebhookEventNotificationBusinessCapabilityUpdateChanges.js";
 export type * from "./WebhookEventNotificationCallsChanges.js";
+export type * from "./WebhookEventNotificationGroupsChanges.js";
+export type * from "./WebhookEventNotificationHistoryChanges.js";
 export type * from "./WebhookEventNotificationMessageTemplateCategoryUpdateChanges.js";
 export type * from "./WebhookEventNotificationMessageTemplateComponentsUpdateChanges.js";
 export type * from "./WebhookEventNotificationMessageTemplateQualityUpdateChanges.js";
@@ -39,7 +48,8 @@ export type * from "./WebhookEventNotificationPaymentConfigurationUpdateChanges.
 export type * from "./WebhookEventNotificationPhoneNumberNameUpdateChanges.js";
 export type * from "./WebhookEventNotificationPhoneNumberQualityUpdateChanges.js";
 export type * from "./WebhookEventNotificationSecurityChanges.js";
-export type * from "./WebhookEventNotificationUserIDUpdateChanges.js";
+export type * from "./WebhookEventNotificationSmbAppStateSyncChanges.js";
+export type * from "./WebhookEventNotificationSmbMessageEchoesChanges.js";
 export type * from "./WebhookEventNotificationUserPreferencesChanges.js";
 
 export type WebhookEventNotificationChange =
@@ -57,15 +67,20 @@ export type WebhookEventNotificationChange =
   | WebhookEventNotificationUserPreferencesChanges
   | WebhookEventNotificationPartnerSolutionsChanges
   | WebhookEventNotificationSecurityChanges
-  | WebhookEventNotificationUserIDUpdateChanges
-  | WebhookEventNotificationCallsChanges;
+  | WebhookEventNotificationCallsChanges
+  | WebhookEventNotificationGroupsChanges
+  | WebhookEventNotificationAutomaticEventsChanges
+  | WebhookEventNotificationBusinessCapabilityUpdateChanges
+  | WebhookEventNotificationHistoryChanges
+  | WebhookEventNotificationSmbAppStateSyncChanges
+  | WebhookEventNotificationSmbMessageEchoesChanges;
 
 export type WebhookEventNotification = {
   /**
    * The specific webhook a business is subscribed to. The webhook is
    * whatsapp_business_account.
    */
-  object: string;
+  object: "whatsapp_business_account";
 
   /** An array of entry objects. */
   entry: {

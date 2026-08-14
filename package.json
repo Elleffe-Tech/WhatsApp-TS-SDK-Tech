@@ -2,7 +2,7 @@
   "name": "@elleffe-tech/whatsapp",
   "version": "1.0.0",
   "type": "module",
-  "description": "SDK for interfacing with WhatsApp Business Platform in Typescript or Node.js using the Cloud API, hosted by Meta.",
+  "description": "TypeScript SDK for interfacing with the WhatsApp Business Platform Cloud API from Node.js.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech.git"
@@ -38,7 +38,7 @@
     "Platform",
     "secure",
     "messaging",
-    "NodeJS",
+    "Node.js",
     "Cloud API"
   ],
   "scripts": {
@@ -53,10 +53,9 @@
     "lint:publint": "publint",
     "lint:typecheck": "npm run typecheck",
     "release": "pnpm run build && changeset publish",
-    "test": "pnpm run /^test:.*/",
-    "test:integration": "pnpm run /^test:integration:.*/",
-    "test:integration:bun": "cd tests/bun && bun test && cd -",
-    "test:integration:deno": "cd tests/deno && deno test && cd -",
+    "test": "pnpm build && pnpm test:coverage && pnpm test:package",
+    "test:coverage": "node --import tsx --experimental-test-coverage --test-coverage-lines=98 --test-coverage-branches=80 --test-coverage-functions=95 --test-coverage-include='src/**/*.ts' --test-coverage-exclude='src/**/*.test.ts' --test-coverage-exclude='src/**/*.type-test.ts' --test-coverage-exclude='src/test/**' --test ./src/**/*.test.ts ./src/*.test.ts",
+    "test:package": "node --test ./tests/node/*.test.mjs",
     "test:unit": "node --import tsx --test ./src/**/*.test.ts ./src/*.test.ts",
     "typecheck": "tsc --noEmit"
   },

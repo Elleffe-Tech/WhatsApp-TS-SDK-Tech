@@ -8,9 +8,13 @@
 
 import { AccountID, BSUID } from "../Account.js";
 import { WhatsappError } from "../Error.js";
+import type { GroupID } from "../Groups/index.js";
 import { PhoneNumberID, PhoneNumberString } from "../PhoneNumber.js";
 import { EventNotificationMessageButton } from "./MessageButton.js";
-import { CreateMessageContact } from "./MessageContact.js";
+import {
+  CreateMessageContact,
+  EventNotificationMessageContact,
+} from "./MessageContact.js";
 import {
   CreateMessageInteractive,
   EventNotificationMessageInteractive,
@@ -21,6 +25,8 @@ import {
   EventNotificationMessageMedia,
 } from "./MessageMedia.js";
 import { EventNotificationMessageReaction } from "./MessageReaction.js";
+import { CreateMessageReaction } from "./MessageReaction.js";
+import { EventNotificationMessageOrder } from "./MessageOrder.js";
 import { EventNotificationMessageSystem } from "./MessageSystem.js";
 import { CreateMessageTemplate } from "./MessageTemplate.js";
 import {
@@ -36,38 +42,33 @@ import { EventNotificationMessageUnsupported } from "./MessageUnsupported.js";
  */
 export type MessageID = `wamid.${string}` | (string & NonNullable<unknown>);
 
-export type MessageStatusType = "read" | (string & NonNullable<unknown>);
+export type MessageStatusType = "read";
 
-export type MessageRecipientType =
-  "individual" | "group" | (string & NonNullable<unknown>);
+export type MessageRecipientType = "individual" | "group";
+
+export type IndividualMessageRecipient =
+  | {
+      recipientType: "individual";
+      to: PhoneNumberString;
+      recipient?: BSUID;
+    }
+  | {
+      recipientType: "individual";
+      to?: never;
+      recipient: BSUID;
+    };
+
+export type GroupMessageRecipient = {
+  recipientType: "group";
+  to: GroupID;
+  recipient?: never;
+};
+
+export type MessageRecipient =
+  IndividualMessageRecipient | GroupMessageRecipient;
 
 type BaseCreateMessageOptions<T extends { type: MessageType }> = {
   phoneNumberID: PhoneNumberID;
-
-  /**
-   * WhatsApp ID or phone number of the customer you want to send a message to.
-   *
-   * At least one of `to` or `recipient` is required. If both are provided, `to`
-   * will be used and `recipient` will be ignored.
-   */
-  to?: PhoneNumberID | PhoneNumberString;
-
-  /**
-   * A BSUID is a unique user identifier that can be used to message a
-   * WhatsApp user when you don’t know their phone number.
-   *
-   * At least one of `to` or `recipient` is required. If both are provided, `to`
-   * will be used and `recipient` will be ignored.
-   */
-  recipient?: BSUID;
-
-  /**
-   * Currently, you can only send messages to individuals.
-   *
-   * @default "individual"
-   * @see {@link https://developers.facebook.com/docs/graph-api/reference/whats-app-business-account-to-number-current-status/messages/#parameters}
-   */
-  recipientType?: MessageRecipientType;
 
   /**
    * Required if replying to any message in the conversation.
@@ -92,8 +93,8 @@ type BaseCreateMessageOptions<T extends { type: MessageType }> = {
    * @since November 14, 2023
    */
   biz_opaque_callback_data?: string;
-  // [key: string]: unknown | undefined;
-} & T;
+} & MessageRecipient &
+  T;
 
 export type CreateAudioMessageOptions = BaseCreateMessageOptions<{
   type: MessageType.Audio;
@@ -127,7 +128,7 @@ export type CreateLocationMessageOptions = BaseCreateMessageOptions<{
 
 export type CreateReactionMessageOptions = BaseCreateMessageOptions<{
   type: MessageType.Reaction;
-  [MessageType.Reaction]: Omit<CreateMessageMedia, "caption">;
+  [MessageType.Reaction]: CreateMessageReaction;
 }>;
 
 export type CreateStickerMessageOptions = BaseCreateMessageOptions<{
@@ -172,9 +173,9 @@ export type CreateMessagePayload = {
   }[];
   messages: {
     id: MessageID;
-    message_status: "accepted" | "held_for_quality_assessment";
+    message_status: "accepted" | "held_for_quality_assessment" | "paused";
   }[];
-  error: WhatsappError;
+  error?: WhatsappError;
 };
 
 export type EventNotificationMessageMessageBase<T extends string, O> = {
@@ -186,7 +187,9 @@ export type EventNotificationMessageMessageBase<T extends string, O> = {
 export type EventNotificationMessageMessage =
   | EventNotificationMessageMessageBase<
       MessageType.Audio,
-      Omit<EventNotificationMessageMedia, "caption" | "filename" | "sha256">
+      Omit<EventNotificationMessageMedia, "caption" | "filename"> & {
+        voice?: boolean;
+      }
     >
   | EventNotificationMessageMessageBase<
       MessageType.Button,
@@ -194,7 +197,7 @@ export type EventNotificationMessageMessage =
     >
   | EventNotificationMessageMessageBase<
       MessageType.Contacts,
-      unknown // TODO: Add this type
+      EventNotificationMessageContact[]
     >
   | EventNotificationMessageMessageBase<
       MessageType.Document,
@@ -210,11 +213,11 @@ export type EventNotificationMessageMessage =
     >
   | EventNotificationMessageMessageBase<
       MessageType.Order,
-      unknown // TODO: Implement this type
+      EventNotificationMessageOrder
     >
   | EventNotificationMessageMessageBase<
       MessageType.Location,
-      unknown // TODO: Implement this type
+      CreateMessageLocation
     >
   | EventNotificationMessageMessageBase<
       MessageType.Reaction,

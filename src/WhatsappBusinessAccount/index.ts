@@ -11,6 +11,8 @@ import {
   WhatsappBusinessAccountID,
   GetWhatsappBusinessAccountOptions,
   GetWhatsappBusinessAccountPayload,
+  UpdateWhatsappBusinessAccountOptions,
+  UpdateWhatsappBusinessAccountPayload,
 } from "../types/WhatsappBusinessAccount/index.js";
 
 interface MethodOptions {
@@ -34,6 +36,22 @@ export default class WhatsappBusinessAccount {
           : {}),
       },
     })<GetWhatsappBusinessAccountPayload>(
+      encodeURIComponent(businessAccountID),
+      request,
+    );
+  }
+
+  public update(
+    businessAccountID: WhatsappBusinessAccountID,
+    {
+      request,
+      ...account
+    }: MethodOptions & UpdateWhatsappBusinessAccountOptions,
+  ) {
+    return this._transport.extend({
+      method: "POST",
+      json: account,
+    })<UpdateWhatsappBusinessAccountPayload>(
       encodeURIComponent(businessAccountID),
       request,
     );

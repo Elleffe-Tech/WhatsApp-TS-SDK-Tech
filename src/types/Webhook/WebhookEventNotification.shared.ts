@@ -9,12 +9,18 @@
 import type { BSUID } from "../Account.js";
 import type { PhoneNumberID, PhoneNumberString } from "../PhoneNumber.js";
 
+/**
+ * Meta adds pricing categories without a Graph API version bump, so this stays
+ * open: unknown values still assign, while the known ones autocomplete.
+ */
 export type ConversationType =
   | "authentication"
   | "marketing"
   | "utility"
   | "service"
-  | "referral_conversation"
+  | "referral_conversion"
+  | "authentication_international"
+  | "marketing_lite"
   | (string & NonNullable<unknown>);
 
 export type WebhookEventNotificationMetadata = {

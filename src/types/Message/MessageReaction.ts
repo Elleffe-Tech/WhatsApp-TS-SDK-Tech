@@ -6,7 +6,9 @@
  * @see    https://greatdetail.com
  */
 
-export type EventNotificationMessageReaction = {
+export type CreateMessageReaction = {
   message_id: string;
   emoji: string;
 };
+
+export type EventNotificationMessageReaction = CreateMessageReaction;

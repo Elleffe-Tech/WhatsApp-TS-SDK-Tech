@@ -6,7 +6,7 @@
  * @see    https://greatdetail.com
  */
 
-import { BusinessAccountID } from "../WhatsappBusinessAccount/index.js";
+import { WhatsappBusinessAccountID } from "../WhatsappBusinessAccount/index.js";
 import {
   BusinessProfile,
   BusinessProfileFields,
@@ -30,6 +30,8 @@ export type PhoneNumberFields =
   | "is_preverified_number"
   | "last_onboarded_time"
   | "messaging_limit_tier"
+  | "whatsapp_business_manager_messaging_limit"
+  | "official_business_account"
   | "platform_type"
   | "quality_score"
   | "status"
@@ -123,6 +125,8 @@ export type PhoneNumber = {
   account_mode: PhoneNumberAccountMode;
   platform_type: PhoneNumberPlatformType;
   messaging_limit_tier: PhoneNumberMessagingLimitTier;
+  whatsapp_business_manager_messaging_limit?: PhoneNumberMessagingLimitTier;
+  official_business_account?: boolean;
   code_verification_status: PhoneNumberCodeVerificationStatus;
   quality_rating: PhoneNumberQualityRating;
   display_phone_number: string;
@@ -172,13 +176,13 @@ export type PhoneNumber = {
 };
 
 export type ListPhoneNumbersOptions = {
-  businessAccountID: BusinessAccountID;
+  businessAccountID: WhatsappBusinessAccountID;
   sort?: string;
   filtering?: string;
   fields?: PhoneNumberFields[];
 };
 
-export type ListPhoneNumbersPaylod = {
+export type ListPhoneNumbersPayload = {
   data: PhoneNumber[];
 };
 
@@ -195,3 +199,11 @@ export type UpdatePhoneNumberOptions = {
 };
 
 export type UpdatePhoneNumberPayload = { success: boolean };
+
+export type RequestOfficialBusinessAccountOptions = {
+  phoneNumberID: PhoneNumberID;
+};
+
+export type RequestOfficialBusinessAccountPayload = {
+  success: boolean;
+};

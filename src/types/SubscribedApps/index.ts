@@ -25,6 +25,14 @@ export type CreateSubscriptionPayload = {
   success: boolean;
 };
 
+export type DeleteSubscriptionOptions = {
+  businessAccountID: WhatsappBusinessAccountID;
+};
+
+export type DeleteSubscriptionPayload = {
+  success: boolean;
+};
+
 export type ListSubscriptionsOptions = {
   businessAccountID: WhatsappBusinessAccountID;
 };
