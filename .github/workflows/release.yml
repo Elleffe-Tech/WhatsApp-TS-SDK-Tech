@@ -59,7 +59,3 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # TEMPORARY: bootstraps the first publish of @elleffe-tech/whatsapp so a
-          # Trusted Publisher can be configured on npmjs.com. Remove this once that
-          # package exists and Trusted Publishing (OIDC) is linked to this workflow.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
