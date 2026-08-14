@@ -35,6 +35,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # npm Trusted Publishing (OIDC) requires npm CLI >=11.5.1; Node's bundled npm is older.
+      - name: Update npm for Trusted Publishing support
+        run: npm install -g npm@^11.5.1
+
       - name: Lint
         run: pnpm run lint
 
@@ -51,5 +55,7 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # TEMPORARY: bootstraps the first publish of @elleffe-tech/whatsapp so a
+          # Trusted Publisher can be configured on npmjs.com. Remove this once that
+          # package exists and Trusted Publishing (OIDC) is linked to this workflow.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
