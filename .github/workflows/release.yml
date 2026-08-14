@@ -39,6 +39,10 @@ jobs:
       - name: Update npm for Trusted Publishing support
         run: npm install -g npm@^11.5.1
 
+      # lint:publint inspects the built dist/ output, so it must exist before linting.
+      - name: Build
+        run: pnpm run build
+
       - name: Lint
         run: pnpm run lint
 

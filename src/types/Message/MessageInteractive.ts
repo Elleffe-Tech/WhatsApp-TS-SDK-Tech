@@ -46,9 +46,7 @@ type InteractiveHeader =
   | InteractiveHeaderDocument;
 
 type InteractiveMediaHeader =
-  | InteractiveHeaderImage
-  | InteractiveHeaderVideo
-  | InteractiveHeaderDocument;
+  InteractiveHeaderImage | InteractiveHeaderVideo | InteractiveHeaderDocument;
 
 type InteractiveCTAUrlAction = {
   name: "cta_url";

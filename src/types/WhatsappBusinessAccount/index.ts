@@ -79,10 +79,7 @@ export type WhatsappBusinessAccount = {
   primary_funding_id?: string;
   purchase_order_number?: string;
   marketing_messages_lite_api_status:
-    | "INELIGIBLE"
-    | "ELIGIBLE"
-    | "ONBOARDED"
-    | "UNKNOWN";
+    "INELIGIBLE" | "ELIGIBLE" | "ONBOARDED" | "UNKNOWN";
   marketing_messages_onboarding_status:
     | "INELIGIBLE_ON_BEHALF_OF_WABA"
     | "INELIGIBLE_INACTIVE_OR_RESTRICTED"
@@ -99,7 +96,8 @@ export type WhatsappBusinessAccount = {
     can_send_message: WhatsappBusinessAccountMessageEligibility;
     entities: {
       id: string;
-      entity_type: // | "PHONE_NUMBER"
+      entity_type:
+        // | "PHONE_NUMBER"
         "WABA" | "BUSINESS" | "APP" | (string & NonNullable<unknown>);
       can_send_message: WhatsappBusinessAccountMessageEligibility;
       additional_info?: string[];

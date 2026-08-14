@@ -7,9 +7,9 @@ Originally a fork of the
 [deprecated official SDK for Meta's WhatsApp Business Messaging APIs](https://github.com/WhatsApp/WhatsApp-Nodejs-SDK),
 later maintained by Great Detail as
 [`@great-detail/whatsapp`](https://github.com/great-detail/WhatsApp-JS-SDK),
-this is Elleffe Tech's fork of that SDK.
-Supports webhooks, phone number management, whatsapp business account
-management, template management, messaging, webhook subscription management.
+this is Elleffe Tech's fork of that SDK. Supports webhooks, phone number
+management, whatsapp business account management, template management,
+messaging, webhook subscription management.
 
 If you find a bug or have a feature request, please
 [open an issue](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/issues).
@@ -557,8 +557,8 @@ Originally forked from the official WhatsApp SDK created by Rashed Talukder.
 ### Contact
 
 This SDK was originally forked from the
-[deprecated official SDK](https://github.com/WhatsApp/WhatsApp-Nodejs-SDK),
-was then maintained by
+[deprecated official SDK](https://github.com/WhatsApp/WhatsApp-Nodejs-SDK), was
+then maintained by
 [Great Detail](https://github.com/great-detail/WhatsApp-JS-SDK) as
 `@great-detail/whatsapp`, and is now maintained by Elleffe Tech as
 `@elleffe-tech/whatsapp`.

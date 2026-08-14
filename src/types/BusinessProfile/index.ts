@@ -67,8 +67,7 @@ export type BusinessProfile = {
 };
 
 export type GetBusinessProfileFields =
-  | Partial<Record<BusinessProfileFields, boolean>>
-  | BusinessProfileFields[];
+  Partial<Record<BusinessProfileFields, boolean>> | BusinessProfileFields[];
 
 export type GetBusinessProfileOptions = {
   phoneNumberID: PhoneNumberID;

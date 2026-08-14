@@ -39,9 +39,7 @@ export type MessageID = `wamid.${string}` | (string & NonNullable<unknown>);
 export type MessageStatusType = "read" | (string & NonNullable<unknown>);
 
 export type MessageRecipientType =
-  | "individual"
-  | "group"
-  | (string & NonNullable<unknown>);
+  "individual" | "group" | (string & NonNullable<unknown>);
 
 type BaseCreateMessageOptions<T extends { type: MessageType }> = {
   phoneNumberID: PhoneNumberID;

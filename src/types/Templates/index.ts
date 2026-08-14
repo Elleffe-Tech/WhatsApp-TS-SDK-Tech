@@ -87,13 +87,7 @@ export type LibraryTemplate = {
 
   /** Types of parameters used in the body (e.g., TEXT, NUMBER, DATE) */
   body_param_types: (
-    | "TEXT"
-    | "ADDRESS"
-    | "AMOUNT"
-    | "DATE"
-    | "PHONE NUMBER"
-    | "EMAIL"
-    | "NUMBER"
+    "TEXT" | "ADDRESS" | "AMOUNT" | "DATE" | "PHONE NUMBER" | "EMAIL" | "NUMBER"
   )[];
 
   /** Array of buttons (quick replies, URLs, phone numbers, etc.) associated with the template */
