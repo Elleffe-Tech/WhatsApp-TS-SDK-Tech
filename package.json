@@ -1,17 +1,17 @@
 {
-  "name": "@great-detail/whatsapp",
+  "name": "@elleffe-tech/whatsapp",
   "version": "9.1.0",
   "type": "module",
   "description": "SDK for interfacing with WhatsApp Business Platform in Typescript or Node.js using the Cloud API, hosted by Meta.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/great-detail/WhatsApp-JS-SDK.git"
+    "url": "git+https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech.git"
   },
-  "homepage": "https://github.com/great-detail/WhatsApp-JS-SDK",
+  "homepage": "https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech",
   "bugs": {
-    "url": "https://github.com/great-detail/WhatsApp-JS-SDK/issues"
+    "url": "https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/issues"
   },
-  "author": "Great Detail Ltd <info@greatdetail.com>",
+  "author": "Elleffe Tech",
   "contributors": [
     "Rashed Talukder",
     "Dom Webber <dom.webber@hotmail.com>",
@@ -56,8 +56,7 @@
     "lint:prettier": "prettier --check .",
     "lint:publint": "publint",
     "lint:typecheck": "npm run typecheck",
-    "prerelease": "pnpm run build",
-    "release": "changeset publish",
+    "release": "pnpm run build && changeset publish",
     "test": "pnpm run /^test:.*/",
     "test:integration": "pnpm run /^test:integration:.*/",
     "test:integration:bun": "cd tests/bun && bun test && cd -",

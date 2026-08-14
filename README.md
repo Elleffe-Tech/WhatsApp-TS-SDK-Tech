@@ -4,16 +4,19 @@
 
 The unofficial SDK for Meta's WhatsApp Business Messaging APIs - Cloud API.
 Originally a fork of the
-[deprecated official SDK for Meta's WhatsApp Business Messaging APIs](https://github.com/WhatsApp/WhatsApp-Nodejs-SDK).
+[deprecated official SDK for Meta's WhatsApp Business Messaging APIs](https://github.com/WhatsApp/WhatsApp-Nodejs-SDK),
+later maintained by Great Detail as
+[`@great-detail/whatsapp`](https://github.com/great-detail/WhatsApp-JS-SDK),
+this is Elleffe Tech's fork of that SDK.
 Supports webhooks, phone number management, whatsapp business account
 management, template management, messaging, webhook subscription management.
 
 If you find a bug or have a feature request, please
-[open an issue](https://github.com/great-detail/WhatsApp-JS-SDK/issues).
+[open an issue](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/issues).
 [Contributions](#contributing) are **greatly** appreciated too!
 
 See this SDK's
-[Changelog](https://github.com/great-detail/WhatsApp-JS-SDK/blob/main/CHANGELOG.md)
+[Changelog](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/blob/main/CHANGELOG.md)
 for updates and release notes.
 
 ## Installation
@@ -22,11 +25,11 @@ Install the WhatsApp Business Platform SDK:
 
 ```bash
 # NPM:
-npm install @great-detail/whatsapp
+npm install @elleffe-tech/whatsapp
 # ^ or use PNPM, Yarn, Bun
 
 # Deno:
-deno add npm:@great-detail/whatsapp
+deno add npm:@elleffe-tech/whatsapp
 ```
 
 ## Getting started
@@ -37,9 +40,9 @@ most of the way. Also see the [examples and snippets section](#usage) to get
 started using the SDK.
 
 ```ts
-import Client from "@great-detail/whatsapp"; // for ESM environments
-// require("@great-detail/whatsapp"); // for CJS environments
-// import Client from "npm:@great-detail/whatsapp"; // for Deno
+import Client from "@elleffe-tech/whatsapp"; // for ESM environments
+// require("@elleffe-tech/whatsapp"); // for CJS environments
+// import Client from "npm:@elleffe-tech/whatsapp"; // for Deno
 
 // Instantiate the SDK Client
 const sdk = new Client({
@@ -71,10 +74,10 @@ may be included, however, no on-premises-only functionality is implemented.
 Whilst the SDK may work with alternative versions of the Graph API, it is
 designed to work with the above. If you find any compatibility issues, please
 report them via
-[GitHub Issues](https://github.com/great-detail/WhatsApp-JS-SDK/issues).
+[GitHub Issues](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/issues).
 
 See this SDK's
-[Changelog](https://github.com/great-detail/WhatsApp-JS-SDK/blob/main/CHANGELOG.md)
+[Changelog](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/blob/main/CHANGELOG.md)
 for updates and release notes.
 
 - **Tested on NodeJS LTS Versions**: `v22`, `v24`,
@@ -543,21 +546,24 @@ Please review our
 before submitting.
 
 If you find a bug or have a feature request, please
-[open an issue](https://github.com/great-detail/WhatsApp-JS-SDK/issues).
+[open an issue](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/issues).
 
 ## License
 
-[MIT © Great Detail Ltd](https://github.com/great-detail/WhatsApp-JS-SDK/blob/main/LICENSE)
+[MIT © Great Detail Ltd](https://github.com/Elleffe-Tech/WhatsApp-TS-SDK-Tech/blob/main/LICENSE)
 
 Originally forked from the official WhatsApp SDK created by Rashed Talukder.
 
 ### Contact
 
 This SDK was originally forked from the
-[deprecated official SDK](https://github.com/WhatsApp/WhatsApp-Nodejs-SDK) and
-is now maintained by Great Detail.
+[deprecated official SDK](https://github.com/WhatsApp/WhatsApp-Nodejs-SDK),
+was then maintained by
+[Great Detail](https://github.com/great-detail/WhatsApp-JS-SDK) as
+`@great-detail/whatsapp`, and is now maintained by Elleffe Tech as
+`@elleffe-tech/whatsapp`.
 
-**Great Detail Ltd**: https://greatdetail.com <info@greatdetail.com>
+**Elleffe Tech**: https://github.com/Elleffe-Tech
 
 ## TODO
 
@@ -577,5 +583,5 @@ particular features by creating an issue for it.
 - [x] WABA Phone Number Management,
 - [ ] WABA System User Management?
 
-[npm (scoped)]: https://img.shields.io/npm/v/%40great-detail/whatsapp
-[sdk-npmjs]: https://www.npmjs.com/package/@great-detail/whatsapp
+[npm (scoped)]: https://img.shields.io/npm/v/%40elleffe-tech/whatsapp
+[sdk-npmjs]: https://www.npmjs.com/package/@elleffe-tech/whatsapp
